@@ -3,9 +3,12 @@ import 'package:get/get.dart';
 import 'package:get/instance_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:store_app/constants.dart';
+import 'package:store_app/main.dart';
 import 'package:store_app/models/product.dart';
 import 'package:store_app/screens/add_product.dart';
 import 'package:store_app/screens/info_pro.dart';
+import 'package:store_app/screens/setting_screen.dart';
+import 'package:store_app/widgets/button_widget.dart';
 import 'package:store_app/widgets/home/home_body.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -16,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool showSearch = false;
   TextEditingController titleConttroll = TextEditingController();
-  List<Product>? serchProduct = [];
+  List<Product> serchProduct = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,15 +27,92 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: homeAppBar(),
       drawer: homeDrawer(),
       body: HomeBody(
-          myProducts: titleConttroll.text == "" ? products : serchProduct!),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context)
-              .push(MaterialPageRoute(builder: (ctx) => AddProduct()));
-        },
-        child: const Icon(Icons.add),
+          myProducts: titleConttroll.text == "" ? products : serchProduct),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            onPressed: () {
+              Get.defaultDialog(
+                  title: "قم بتحديد نوع الفرز",
+                  content: Row(
+                    children: [
+                      Expanded(
+                        child: ButtonWidget(
+                            nameButton: "الاسم",
+                            voidCallBakElveatateButtonGM: () {
+                              Navigator.pop(context);
+                              setState(() {
+                                if (serchProduct.isNotEmpty) {
+                                  serchProduct =
+                                      sortProductTitle(serchProduct)!;
+                                } else {
+                                  products = sortProductTitle(
+                                    products,
+                                  )!;
+                                }
+                              });
+                            }),
+                      ),
+                      Expanded(
+                        child: ButtonWidget(
+                          nameButton: "السعر",
+                          voidCallBakElveatateButtonGM: () {
+                            Navigator.pop(context);
+                            setState(() {
+                              if (serchProduct.isNotEmpty) {
+                                serchProduct = sortProductPrice(serchProduct)!;
+                              } else {
+                                products = sortProductPrice(
+                                  products,
+                                )!;
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ],
+                    // ButtonWidget(),
+                  ));
+            },
+            child: const Icon(Icons.filter_list),
+          ),
+          const SizedBox(height: 20),
+          FloatingActionButton(
+            onPressed: () {
+              Get.to(() => AddProduct());
+            },
+            child: const Icon(Icons.add),
+          ),
+        ],
       ),
     );
+  }
+
+  List<Product>? sortProductPrice(List<Product> sortProduct) {
+    for (int j = 0; j < sortProduct.length; j++) {
+      for (int i = j; i < sortProduct.length - 1; i++) {
+        if (sortProduct[j].price! > sortProduct[i].price!) {
+          Product temp = sortProduct[j];
+          sortProduct[j] = sortProduct[i];
+          sortProduct[i] = temp;
+        }
+      }
+    }
+    return sortProduct;
+  }
+
+  List<Product>? sortProductTitle(List<Product> sortProduct) {
+    for (int j = 0; j < sortProduct.length - 1; j++) {
+      for (int i = j; i < sortProduct.length; i++) {
+        if (sortProduct[j].title!.compareTo(sortProduct[i].title!) > 0) {
+          Product temp = sortProduct[j];
+          sortProduct[j] = sortProduct[i];
+          sortProduct[i] = temp;
+        }
+      }
+    }
+    return sortProduct;
   }
 
   Widget homeDrawer() {
@@ -50,15 +130,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Icon(Icons.person, color: kPrimaryColor),
               ),
             ),
-            const ListTile(
-              title: Text(
+            ListTile(
+              title: const Text(
                 "اعدادات الحساب",
                 style: TextStyle(fontSize: 16),
               ),
-              leading: Icon(
+              leading: const Icon(
                 Icons.account_circle,
                 color: kPrimaryColor,
               ),
+              onTap: () => Get.to(SettingScreen()),
             ),
             const ListTile(
               title: Text(
@@ -119,25 +200,26 @@ class _HomeScreenState extends State<HomeScreen> {
                       keyboardType: TextInputType.text,
                       onChanged: (value) {
                         setState(() {
-                          serchProduct!.clear();
+                          serchProduct.clear();
+
                           products.forEach((e) {
                             if (e.title!.contains(value)) {
-                              serchProduct!.add(e);
+                              serchProduct.add(e);
                             }
                           });
                         });
                       },
                       validator: (val) => val!.isEmpty ? " is Empty" : null,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: "اسم المنتج",
                         //    hintStyle: textStyleSecondary,
                         // prefix: const Text("R.Y"),
-                        enabledBorder: const OutlineInputBorder(
-                            borderSide: const BorderSide(
+                        enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
                           color: kPrimaryColor,
                           width: 1,
                         )),
-                        focusedBorder: const OutlineInputBorder(
+                        focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                           color: kPrimaryColor,
                           width: 1,
@@ -147,8 +229,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   )),
             )
           : Text(
-              'مرحبا بكم بمتجر الالكترونيات',
-              style: GoogleFonts.getFont('Almarai'),
+              (sharedPreferences!.getString("name") != null)
+                  ? sharedPreferences!.getString("name")!
+                  : 'مرحبا بكم بمتجر الالكترونيات',
+              style: GoogleFonts.getFont('Almarai').copyWith(fontSize: 18),
             ),
       centerTitle: true,
       actions: [
@@ -157,7 +241,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onPressed: () {
                   setState(() {
                     showSearch = false;
-                    titleConttroll.text == "";
+                    titleConttroll.text = "";
+                    serchProduct.clear();
                   });
                 },
                 icon: Icon(

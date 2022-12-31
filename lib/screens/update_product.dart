@@ -110,7 +110,7 @@ class _UpdateProductState extends State<UpdateProduct> {
                 ButtonWidget(
                     voidCallBakElveatateButtonGM: () {
                       Get.defaultDialog(
-                          title: "هل انت متاكد تريد الحــذف",
+                          title: "هل انت متاكد تريد المتابعة",
                           content: Row(
                             children: [
                               Expanded(
@@ -203,12 +203,6 @@ class _UpdateProductState extends State<UpdateProduct> {
         style: GoogleFonts.getFont('Almarai'),
       ),
       centerTitle: true,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {},
-        ),
-      ],
     );
   }
 }

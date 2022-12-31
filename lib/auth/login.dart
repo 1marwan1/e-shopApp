@@ -1,34 +1,31 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:get/get.dart';
+
+import 'package:store_app/auth/singin.dart';
+
+import '../screens/home_screen.dart';
+
+import '../widgets/home/signin_long_widget.dart';
 
 class LoginScreenAuth extends StatelessWidget {
-  const LoginScreenAuth({super.key});
+  LoginScreenAuth({super.key});
 
+  final TextEditingController emailConttroll = TextEditingController();
+  final TextEditingController passwordConttroll = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text("==========="),
-          ElevatedButton(
-            onPressed: () async {
-              // print(await FirebaseMessaging.instance.getToken());
-              // try {
-              //   await FirebaseAuth.instance.createUserWithEmailAndPassword(
-              //       email: "marwan@gmail.com", password: "marwan2017");
-              //   return null;
-              // } on FirebaseAuthException catch (ex) {
-              //   print("${ex.code}: ${ex.message}");
-              // }
-            },
-            child: Text("login"),
-          )
-        ],
-      ),
+    return SinginOrLoginwidget(
+      titleName: "تسجيل الدخول",
+      backName: 'انشاء حساب',
+      passwordConttroll: passwordConttroll,
+      emailConttroll: emailConttroll,
+      onTap: () {
+        Get.offAll(HomeScreen());
+      },
+      onaBack: () {
+        Get.to(() => SigninScreenAuth());
+      },
     );
   }
 }

@@ -15,13 +15,13 @@ class HomeBody extends StatelessWidget {
       bottom: false,
       child: Column(
         children: [
-          SizedBox(height: kDefaultPadding / 2),
+          const SizedBox(height: kDefaultPadding / 2),
           Expanded(
             child: Stack(
               children: [
                 Container(
-                  margin: EdgeInsets.only(top: 70.0),
-                  decoration: BoxDecoration(
+                  margin: const EdgeInsets.only(top: 70.0),
+                  decoration: const BoxDecoration(
                     color: kBackgroundColor,
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(40),

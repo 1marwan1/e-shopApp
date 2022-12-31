@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:store_app/constants.dart';
 
 class ButtonWidget extends StatelessWidget {
@@ -31,10 +32,8 @@ class ButtonWidget extends StatelessWidget {
           ),
           child: Text(
             nameButton,
-            style: const TextStyle(
-              fontSize: 16,
-              fontFamily: "TajawalB",
-            ),
+            style: GoogleFonts.getFont('Almarai')
+                .copyWith(fontSize: 15, fontWeight: FontWeight.bold),
           ),
         ));
   }

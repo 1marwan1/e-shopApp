@@ -3,13 +3,17 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store_app/auth/login.dart';
 import 'package:store_app/constants.dart';
 import 'package:store_app/screens/home_screen.dart';
-//import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:store_app/screens/splash_screen.dart';
 
+//import 'package:flutter_localizations/flutter_localizations.dart';
+SharedPreferences? sharedPreferences;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  sharedPreferences = await SharedPreferences.getInstance();
 //  await Firebase.initializeApp();
 //   FirebaseMessaging.instance.requestPermission();
 //   FirebaseMessaging messaging = FirebaseMessaging.instance;
@@ -49,7 +53,7 @@ class MyApp extends StatelessWidget {
         // supportedLocales: [Locale("ar", "AE")],
         // locale: Locale("ar", "AE"),
 
-        home: HomeScreen(), //  const LoginScreenAuth()
+        home: const SplashView(), //LoginScreenAuth() //HomeScreen(), //
       ),
     );
   }

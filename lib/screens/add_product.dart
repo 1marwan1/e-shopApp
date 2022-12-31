@@ -102,7 +102,7 @@ class _AddProductState extends State<AddProduct> {
                           price: int.parse(priceConttroll.text),
                           title: titleConttroll.text,
                           subTitle: subTitleConttroll.text,
-                          image: "images/airpod.png",
+                          image: "images/notimage.png",
                           imagefile: imageProfile,
                           description: descriptionConttroll.text,
                         ),
@@ -163,12 +163,6 @@ class _AddProductState extends State<AddProduct> {
         style: GoogleFonts.getFont('Almarai'),
       ),
       centerTitle: true,
-      actions: [
-        IconButton(
-          icon: Icon(Icons.menu),
-          onPressed: () {},
-        ),
-      ],
     );
   }
 }
