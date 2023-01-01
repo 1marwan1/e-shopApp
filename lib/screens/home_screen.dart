@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/instance_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:store_app/auth/login.dart';
 import 'package:store_app/constants.dart';
+import 'package:store_app/data/firebase/cloud_firebase.dart';
 import 'package:store_app/main.dart';
-import 'package:store_app/models/product.dart';
+import 'package:store_app/data/models/product.dart';
 import 'package:store_app/screens/add_product.dart';
 import 'package:store_app/screens/info_pro.dart';
 import 'package:store_app/screens/setting_screen.dart';
 import 'package:store_app/widgets/button_widget.dart';
 import 'package:store_app/widgets/home/home_body.dart';
+
+CloudFirebase? cloudFirebase;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -17,6 +20,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    cloudFirebase = CloudFirebase();
+    super.initState();
+  }
+
+  bool isDataLoading = true;
+  @override
+  void didChangeDependencies() async {
+    await cloudFirebase!.getAllDocProduct().then((value) => setState(() {
+          isDataLoading = true;
+        }));
+
+    super.didChangeDependencies();
+  }
+
   bool showSearch = false;
   TextEditingController titleConttroll = TextEditingController();
   List<Product> serchProduct = [];
@@ -26,11 +45,42 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: kPrimaryColor,
       appBar: homeAppBar(),
       drawer: homeDrawer(),
-      body: HomeBody(
-          myProducts: titleConttroll.text == "" ? products : serchProduct),
+      body: products.isEmpty
+          ? Container(
+              color: Colors.white,
+              width: Get.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(
+                    color: kPrimaryColor,
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  Text(
+                    "..." "جاري جلب البيانات",
+                    style: GoogleFonts.getFont('Almarai').copyWith(
+                        fontSize: 18,
+                        color: kPrimaryColor,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            )
+          : HomeBody(
+              myProducts: titleConttroll.text == "" ? products : serchProduct),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {});
+            },
+            child: const Icon(Icons.refresh),
+          ),
+          const SizedBox(height: 20),
           FloatingActionButton(
             onPressed: () {
               Get.defaultDialog(
@@ -91,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Product>? sortProductPrice(List<Product> sortProduct) {
     for (int j = 0; j < sortProduct.length; j++) {
-      for (int i = j; i < sortProduct.length - 1; i++) {
+      for (int i = j; i < sortProduct.length; i++) {
         if (sortProduct[j].price! > sortProduct[i].price!) {
           Product temp = sortProduct[j];
           sortProduct[j] = sortProduct[i];
@@ -103,7 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   List<Product>? sortProductTitle(List<Product> sortProduct) {
-    for (int j = 0; j < sortProduct.length - 1; j++) {
+    for (int j = 0; j < sortProduct.length; j++) {
       for (int i = j; i < sortProduct.length; i++) {
         if (sortProduct[j].title!.compareTo(sortProduct[i].title!) > 0) {
           Product temp = sortProduct[j];
@@ -123,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             UserAccountsDrawerHeader(
               accountName: const Text("admin admin"),
-              accountEmail: const Text("admin@gmail.com"),
+              accountEmail: Text(sharedPreferences!.getString("email")!),
               decoration: const BoxDecoration(color: kPrimaryColor),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white.withOpacity(0.5),
@@ -164,12 +214,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: kPrimaryColor,
               ),
             ),
-            const ListTile(
-              title: Text(
+            ListTile(
+              onTap: () {
+                sharedPreferences!.setBool("auth", false);
+                Get.offAll(() => LoginScreenAuth());
+              },
+              title: const Text(
                 " تسجيل الخروج",
                 style: TextStyle(fontSize: 16),
               ),
-              leading: Icon(
+              leading: const Icon(
                 Icons.exit_to_app,
                 color: kPrimaryColor,
               ),

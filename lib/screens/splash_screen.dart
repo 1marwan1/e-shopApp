@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:store_app/constants.dart';
+import 'package:store_app/main.dart';
+import 'package:store_app/screens/home_screen.dart';
 
 import '../auth/login.dart';
 
@@ -78,7 +80,12 @@ class SplashViewBodyState extends State<SplashViewBody>
 
   void goToNextView() {
     Future.delayed(const Duration(seconds: 3), () async {
-      Get.offAll(() => LoginScreenAuth());
+      if (sharedPreferences!.getBool("auth") == null ||
+          sharedPreferences!.getBool("auth") == false) {
+        Get.offAll(() => LoginScreenAuth());
+      } else {
+        Get.offAll(() => HomeScreen());
+      }
     });
   }
 }

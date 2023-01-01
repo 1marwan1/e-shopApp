@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:store_app/constants.dart';
 import 'package:store_app/main.dart';
-import 'package:store_app/models/product.dart';
+import 'package:store_app/data/models/product.dart';
 import 'package:store_app/widgets/button_widget.dart';
 
 import '../widgets/textfile_widget.dart';

@@ -4,7 +4,7 @@ import 'package:store_app/constants.dart';
 import 'package:store_app/screens/details_screen.dart';
 import 'package:store_app/widgets/home/product_cart.dart';
 
-import '../../models/product.dart';
+import '../../data/models/product.dart';
 
 class HomeBody extends StatelessWidget {
   HomeBody({required this.myProducts});

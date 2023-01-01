@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:store_app/constants.dart';
-import 'package:store_app/models/product.dart';
+import 'package:store_app/data/models/product.dart';
 import 'package:store_app/widgets/details/color_dot.dart';
 import 'package:store_app/widgets/details/product_image.dart';
 

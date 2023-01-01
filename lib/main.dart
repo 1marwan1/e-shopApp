@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:store_app/auth/login.dart';
 import 'package:store_app/constants.dart';
+import 'package:store_app/data/remote_servers/get_product.dart';
 import 'package:store_app/screens/home_screen.dart';
 import 'package:store_app/screens/splash_screen.dart';
 
@@ -14,14 +17,15 @@ SharedPreferences? sharedPreferences;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   sharedPreferences = await SharedPreferences.getInstance();
-//  await Firebase.initializeApp();
-//   FirebaseMessaging.instance.requestPermission();
-//   FirebaseMessaging messaging = FirebaseMessaging.instance;
-//   FirebaseMessaging.onBackgroundMessage(backgroudMessage);
-//   FirebaseMessaging.onMessageOpenedApp.listen((message) {
-//     print(
-//         "  ${message.notification!.title ?? "not title"} ${message.notification!.body ?? "not body"}");
-//   });
+  await Firebase.initializeApp();
+  //FirebaseMessaging.instance.requestPermission();
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // FirebaseMessaging.onBackgroundMessage(backgroudMessage);
+  // FirebaseMessaging.onMessageOpenedApp.listen((message) {
+  //   print(
+  //       "  ${message.notification!.title ?? "not title"} ${message.notification!.body ?? "not body"}");
+  // });
+
   runApp(MyApp());
 }
 

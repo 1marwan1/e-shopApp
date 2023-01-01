@@ -1,11 +1,18 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:store_app/constants.dart';
-import 'package:store_app/models/product.dart';
+import 'package:store_app/data/models/product.dart';
+import 'package:store_app/screens/home_screen.dart';
 import 'package:store_app/screens/update_product.dart';
 import 'package:store_app/widgets/details/details_body.dart';
 
 import '../widgets/button_widget.dart';
+import '../widgets/show_loading.dart';
+
+CollectionReference notesref = FirebaseFirestore.instance.collection("product");
 
 class DetailsScreen extends StatelessWidget {
   final Product? product;
@@ -30,8 +37,8 @@ class DetailsScreen extends StatelessWidget {
       backgroundColor: kBackgroundColor,
       elevation: 0,
       leading: IconButton(
-        padding: EdgeInsets.only(right: kDefaultPadding),
-        icon: Icon(
+        padding: const EdgeInsets.only(right: kDefaultPadding),
+        icon: const Icon(
           Icons.arrow_back,
           color: kPrimaryColor,
         ),
@@ -49,14 +56,42 @@ class DetailsScreen extends StatelessWidget {
                       Expanded(
                         child: ButtonWidget(
                           nameButton: "yes",
-                          voidCallBakElveatateButtonGM: () {
+                          voidCallBakElveatateButtonGM: () async {
                             Navigator.pop(context);
-                            for (int i = 0; i < products.length; i++) {
-                              if (products[i].id == product!.id) {
-                                products.removeAt(i);
-                              }
-                            }
-                            Navigator.pop(context);
+                            showLoading(context);
+                            cloudFirebase!.deleteDocProduct(product!)
+                              ..then((value) {
+                                Navigator.of(context).pop();
+                                // ignore: avoid_single_cascade_in_expression_statements
+                                AwesomeDialog(
+                                    context: context,
+                                    title: "تمت  عملية الحــذف بنجاح",
+                                    body:
+                                        const Text("تمت  عملية الحــذف بنجاح"),
+                                    dialogType: DialogType.success)
+                                  ..show();
+                              }).catchError((e) {
+                                Navigator.of(context).pop();
+                                // ignore: avoid_single_cascade_in_expression_statements
+                                AwesomeDialog(
+                                    context: context,
+                                    title: "$e",
+                                    body: Text("$e"),
+                                    dialogType: DialogType.error)
+                                  ..show();
+                              });
+                            // for (int i = 0; i < products.length; i++) {
+                            //   if (products[i].id == product!.id) {
+                            //     await notesref.doc(products[i].docid).delete();
+                            //     await FirebaseStorage.instance
+                            //         .refFromURL(products[i].image!)
+                            //         .delete()
+                            //         .then((value) {
+                            //       products.removeAt(i);
+                            //       Navigator.pop(context);
+                            //     });
+                            //   }
+                            // }
                           },
                         ),
                       ),
@@ -72,13 +107,13 @@ class DetailsScreen extends StatelessWidget {
                     // ButtonWidget(),
                   ));
             },
-            icon: Icon(Icons.delete, color: Colors.red)),
+            icon: const Icon(Icons.delete, color: Colors.red)),
         IconButton(
             onPressed: () {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => UpdateProduct(product: product!)));
             },
-            icon: Icon(Icons.edit, color: kPrimaryColor)),
+            icon: const Icon(Icons.edit, color: kPrimaryColor)),
       ],
       centerTitle: false,
       title: Text(

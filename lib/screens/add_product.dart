@@ -1,14 +1,21 @@
 import 'dart:io';
-
+import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:path/path.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:store_app/constants.dart';
-import 'package:store_app/models/product.dart';
+import 'package:store_app/data/models/product.dart';
+import 'package:store_app/screens/home_screen.dart';
 import 'package:store_app/widgets/button_widget.dart';
 
+import '../widgets/show_loading.dart';
 import '../widgets/textfile_widget.dart';
 
 //  Product(
@@ -35,6 +42,8 @@ class _AddProductState extends State<AddProduct> {
 
   TextEditingController descriptionConttroll = TextEditingController();
 
+  var title, note, imageurl;
+  late Reference ref;
   @override
   Widget build(BuildContext context) {
     return Directionality(
@@ -95,19 +104,7 @@ class _AddProductState extends State<AddProduct> {
                 ),
                 ButtonWidget(
                     voidCallBakElveatateButtonGM: () {
-                      products.insert(
-                        0,
-                        Product(
-                          id: products[products.length - 1].id! + 1,
-                          price: int.parse(priceConttroll.text),
-                          title: titleConttroll.text,
-                          subTitle: subTitleConttroll.text,
-                          image: "images/notimage.png",
-                          imagefile: imageProfile,
-                          description: descriptionConttroll.text,
-                        ),
-                      );
-                      Navigator.pop(context);
+                      addProductMethod(context);
                     },
                     nameButton: "اضافة")
               ],
@@ -138,12 +135,14 @@ class _AddProductState extends State<AddProduct> {
         return;
       }
       File? img = File(image.path);
-
-      // img = (await cropImage(imageFile: img))!;
       // ignore: unnecessary_null_comparison
       if (img == null) {
         return;
       }
+      //imageProfile = img;
+      var rand = Random().nextInt(100000);
+      var imagename = "$rand${basename(image.path)}";
+      ref = FirebaseStorage.instance.ref("images").child(imagename);
       setState(() {
         imageProfile = img;
       });
@@ -164,5 +163,50 @@ class _AddProductState extends State<AddProduct> {
       ),
       centerTitle: true,
     );
+  }
+
+  addProductMethod(context) async {
+    if (imageProfile == null) {
+      // ignore: avoid_single_cascade_in_expression_statements
+      return AwesomeDialog(
+          context: context,
+          title: "هام",
+          body: const Text("please choose Image"),
+          dialogType: DialogType.error)
+        ..show();
+    }
+    if (imageProfile != null) {
+      showLoading(context);
+      await ref.putFile(imageProfile!);
+      imageurl = await ref.getDownloadURL();
+      cloudFirebase!
+          .addDocProduct(Product(
+        id: FirebaseAuth.instance.currentUser?.uid,
+        title: titleConttroll.text,
+        subTitle: subTitleConttroll.text,
+        price: int.parse(priceConttroll.text),
+        image: imageurl,
+        description: descriptionConttroll.text,
+      ))
+          .then((value) {
+        Navigator.of(context).pop();
+        // ignore: avoid_single_cascade_in_expression_statements
+        AwesomeDialog(
+            context: context,
+            title: "تمت الاضافة بنجاح",
+            body: const Text("تمت الاضافة بنجاح"),
+            dialogType: DialogType.success)
+          ..show();
+      }).catchError((e) {
+        Navigator.of(context).pop();
+        // ignore: avoid_single_cascade_in_expression_statements
+        AwesomeDialog(
+            context: context,
+            title: "$e",
+            body: Text("$e"),
+            dialogType: DialogType.error)
+          ..show();
+      });
+    }
   }
 }

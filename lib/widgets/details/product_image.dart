@@ -29,12 +29,19 @@ class ProductImage extends StatelessWidget {
             ),
           ),
           imagefile == null
-              ? Image.asset(
-                  image!,
+              ? FadeInImage.assetNetwork(
+                  placeholder: "images/E-shopApp_foreground.png",
+                  fit: BoxFit.cover,
+                  image: image!,
                   height: size!.width * 0.75,
                   width: size!.width * 0.75,
-                  fit: BoxFit.cover,
-                )
+                  imageErrorBuilder: (context, error, stackTrace) =>
+                      Image.asset(
+                        "images/notimage.png",
+                        height: size!.width * 0.75,
+                        width: size!.width * 0.75,
+                        fit: BoxFit.fill,
+                      ))
               : Image.file(
                   imagefile!,
                   height: size!.width * 0.75,

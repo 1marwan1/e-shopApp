@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:store_app/models/product.dart';
+import 'package:get/get.dart';
+import 'package:store_app/data/models/product.dart';
 
 import '../../constants.dart';
 
@@ -51,10 +52,19 @@ class ProductCard extends StatelessWidget {
                 height: 160.0,
                 width: 200.0,
                 child: product!.imagefile == null
-                    ? Image.asset(
-                        product!.image!,
+                    ? FadeInImage.assetNetwork(
+                        placeholder: "images/E-shopApp_foreground.png",
                         fit: BoxFit.cover,
-                      )
+                        image: product!.image!,
+                        height: 160.0,
+                        width: 200.0,
+                        imageErrorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
+                              "images/notimage.png",
+                              height: 160.0,
+                              width: 200.0,
+                              fit: BoxFit.fill,
+                            ))
                     : Image.file(
                         product!.imagefile!,
                         fit: BoxFit.cover,
